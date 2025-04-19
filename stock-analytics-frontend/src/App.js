@@ -13,9 +13,9 @@ const App = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const res = await axios.post('http://stock-market-analytics-production.up.railway.app/summary', {
+      const res = await axios.post('https://stock-market-analytics-production.up.railway.app/summary', {
         symbol,
-        sma: 197.1, // Replace with dynamic values later
+        sma: 197.1,
         rsi: 72,
         percent_change: 1.8,
         trend: 'bullish',
@@ -27,27 +27,18 @@ const App = () => {
     setLoading(false);
   };
 
-  const fetchChartData = async () => {
-    try {
-      const res = await axios.get(`http://stock-market-analytics-production.up.railway.app/chart/${symbol}`);
-      setChartData(res.data);
-    } catch (err) {
-      console.error('Error fetching chart data');
-    }
-  };
-
   useEffect(() => {
     const fetchChartData = async () => {
       try {
-        const response = await axios.get(`http://stock-market-analytics-production.up.railway.app/chart/${symbol}`);
+        const response = await axios.get(`https://stock-market-analytics-production.up.railway.app/chart/${symbol}`);
         setChartData(response.data);
       } catch (error) {
         console.error('Error fetching chart data', error);
       }
     };
-  
-    fetchChartData();
-  }, [symbol]);  
+
+    fetchChartData(); // ✅ trigger it
+  }, [symbol]);
 
   return (
     <div style={{ padding: '40px', fontFamily: 'Arial' }}>
@@ -83,3 +74,4 @@ const App = () => {
 };
 
 export default App;
+
