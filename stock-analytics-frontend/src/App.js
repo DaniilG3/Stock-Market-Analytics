@@ -13,7 +13,7 @@ const App = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const res = await axios.post('http://127.0.0.1:8000/summary', {
+      const res = await axios.post('http://stock-market-analytics-production.up.railway.app/summary', {
         symbol,
         sma: 197.1, // Replace with dynamic values later
         rsi: 72,
@@ -29,7 +29,7 @@ const App = () => {
 
   const fetchChartData = async () => {
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/chart/${symbol}`);
+      const res = await axios.get(`http://stock-market-analytics-production.up.railway.app/chart/${symbol}`);
       setChartData(res.data);
     } catch (err) {
       console.error('Error fetching chart data');
@@ -37,8 +37,17 @@ const App = () => {
   };
 
   useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        const response = await axios.get(`http://stock-market-analytics-production.up.railway.app/chart/${symbol}`);
+        setChartData(response.data);
+      } catch (error) {
+        console.error('Error fetching chart data', error);
+      }
+    };
+  
     fetchChartData();
-  }, [symbol]);
+  }, [symbol]);  
 
   return (
     <div style={{ padding: '40px', fontFamily: 'Arial' }}>
