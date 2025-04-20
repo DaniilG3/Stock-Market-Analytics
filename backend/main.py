@@ -13,7 +13,7 @@ for m in genai.list_models():
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["https://stock-market-analytics-production.up.railway.app", "https://stock-market-analytics-production-9f1m.up.railway.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

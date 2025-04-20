@@ -13,7 +13,7 @@ const App = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const res = await axios.post('https://stock-market-analytics-production.up.railway.app/summary', {
+      const res = await axios.post('https://stock-market-analytics-production-9f1m.up.railway.app/summary', {
         symbol,
         sma: 197.1,
         rsi: 72,
@@ -30,7 +30,7 @@ const App = () => {
   useEffect(() => {
     const fetchChartData = async () => {
       try {
-        const response = await axios.get(`https://stock-market-analytics-production.up.railway.app/chart/${symbol}`);
+        const response = await axios.get(`https://stock-market-analytics-production-9f1m.up.railway.app/chart/${symbol}`);
         setChartData(response.data);
       } catch (error) {
         console.error('Error fetching chart data', error);
