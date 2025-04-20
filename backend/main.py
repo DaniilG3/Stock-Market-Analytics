@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import google.generativeai as genai
 from fastapi.middleware.cors import CORSMiddleware
-
+import os
+import psycopg2
+from urllib.parse import urlparse
 
 # 👇 Replace with your actual Gemini API key
 genai.configure(api_key="AIzaSyANJbLAzRLq_UVocYf2Q63tq9uLgfv01S4")
@@ -64,22 +66,33 @@ def get_summary(data: StockInput):
 
 @app.get("/chart/{symbol}")
 def get_chart(symbol: str):
-    import psycopg2
+    # Get your full DATABASE URL string from Railway and parse it
+    DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:tkNfhRCaMdTErIMQKdinVfyGVDYugEKK@ballast.proxy.rlwy.net:37791/railway")
+    parsed = urlparse(DATABASE_URL)
+
+    # Connect to PostgreSQL
     conn = psycopg2.connect(
-        dbname="stock_data",
-        user="daniilgoncharuk",  # change if needed
-        host="localhost"
+        dbname=parsed.path[1:],
+        user=parsed.username,
+        password=parsed.password,
+        host=parsed.hostname,
+        port=parsed.port
     )
+
     cursor = conn.cursor()
     cursor.execute("""
-    SELECT DISTINCT ON (DATE_TRUNC('minute', timestamp)) 
-        timestamp::time, close, sma_5
-    FROM stocks
-    WHERE symbol = %s AND sma_5 IS NOT NULL
-    ORDER BY DATE_TRUNC('minute', timestamp) DESC
-    LIMIT 10
-""", (symbol,))
+        SELECT DISTINCT ON (DATE_TRUNC('minute', timestamp)) 
+            timestamp::time, close, sma_5
+        FROM stocks
+        WHERE symbol = %s AND sma_5 IS NOT NULL
+        ORDER BY DATE_TRUNC('minute', timestamp) DESC
+        LIMIT 10
+    """, (symbol,))
+    
     rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
     rows.reverse()
     chart_data = [
         {"timestamp": row[0].strftime("%H:%M"), "close": float(row[1]), "sma_5": float(row[2])}
